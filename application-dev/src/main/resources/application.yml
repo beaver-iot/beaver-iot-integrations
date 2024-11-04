@@ -12,13 +12,18 @@ spring:
       jakarta.persistence.query.timeout: "${JAVAX_PERSISTENCE_QUERY_TIMEOUT:30000}" # General timeout for JDBC queries
       hibernate.type.wrapper_array_handling: ALLOW
       hibernate.naming.physical-strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
-      hibernate.hbm2ddl.auto: create-drop
+      hibernate.hbm2ddl.auto: update
       hibernate.dialect: org.hibernate.dialect.H2Dialect
   datasource:
-    url: "${SPRING_DATASOURCE_URL:jdbc:h2:file:~/beaver-dev;AUTO_SERVER=TRUE}"
+    url: "${SPRING_DATASOURCE_URL:jdbc:h2:file:~/beaver-dev2;AUTO_SERVER=TRUE}"
     username: "${SPRING_DATASOURCE_USERNAME:sa}"
     password: "${SPRING_DATASOURCE_PASSWORD:}"
     driverClassName: "${SPRING_DRIVER_CLASS_NAME:org.h2.Driver}"
+
+  h2:
+    console:
+      enabled: true
+      path: /public/h2-console
 
 camel:
   springboot:
