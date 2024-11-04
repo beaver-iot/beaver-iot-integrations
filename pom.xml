@@ -23,7 +23,7 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.milesight.iab</groupId>
+                <groupId>com.milesight.beaveriot</groupId>
                 <artifactId>beaver-iot-parent</artifactId>
                 <version>${beaver-iot.version}</version>
                 <type>pom</type>
