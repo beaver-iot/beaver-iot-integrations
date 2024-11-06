@@ -1,0 +1,8 @@
+integration:
+  my-integration:
+    name: My Integration Name
+    description: "My Demo Integration"
+    icon-url: "public/my-integration-logo.svg"
+    enabled: true
+    entity-identifier-add-device: add_device
+    entity-identifier-delete-device: delete_device

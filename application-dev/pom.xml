@@ -89,10 +89,10 @@
             <groupId>com.milesight.beaveriot</groupId>
             <artifactId>dashboard-service</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.milesight.beaveriot</groupId>
-            <artifactId>authentication-service</artifactId>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.milesight.beaveriot</groupId>-->
+<!--            <artifactId>authentication-service</artifactId>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>com.milesight.beaveriot</groupId>
             <artifactId>user-service</artifactId>
@@ -105,7 +105,7 @@
         <!-- test dependencies -->
         <dependency>
             <groupId>com.milesight.beaveriot</groupId>
-            <artifactId>sample-integrations</artifactId>
+            <artifactId>my-integration</artifactId>
             <version>${project.version}</version>
         </dependency>
 
