@@ -103,9 +103,15 @@
         </dependency>
 
         <!-- test dependencies -->
+<!--        <dependency>-->
+<!--            <groupId>com.milesight.beaveriot</groupId>-->
+<!--            <artifactId>my-integration</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
         <dependency>
             <groupId>com.milesight.beaveriot</groupId>
-            <artifactId>my-integration</artifactId>
+            <artifactId>ping</artifactId>
             <version>${project.version}</version>
         </dependency>
 

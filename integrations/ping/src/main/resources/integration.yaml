@@ -1,0 +1,8 @@
+integration:
+  ping:
+    name: Ping
+    description: "Check whether device is online"
+    icon-url: "public/ping-logo.svg"
+    enabled: true
+    entity-identifier-add-device: add_device
+    entity-identifier-delete-device: delete_device
