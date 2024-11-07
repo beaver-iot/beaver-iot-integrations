@@ -1,6 +1,7 @@
 package com.milesight.beaveriot.ping;
 
 import com.milesight.beaveriot.context.api.DeviceServiceProvider;
+import com.milesight.beaveriot.context.api.EntityValueServiceProvider;
 import com.milesight.beaveriot.context.api.ExchangeFlowExecutor;
 import com.milesight.beaveriot.context.integration.enums.AccessMod;
 import com.milesight.beaveriot.context.integration.enums.EntityValueType;
@@ -10,7 +11,9 @@ import com.milesight.beaveriot.eventbus.annotations.EventSubscribe;
 import com.milesight.beaveriot.eventbus.api.Event;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -26,6 +29,9 @@ public class PingService {
 
     @Autowired
     private ExchangeFlowExecutor exchangeFlowExecutor;
+
+    @Autowired
+    private EntityValueServiceProvider entityValueServiceProvider;
 
     @EventSubscribe(payloadKeyExpression = PingConstants.INTEGRATION_ID + ".integration.add_device.*", eventType = ExchangeEvent.EventType.DOWN)
     public void onAddDevice(Event<PingIntegrationEntities.AddDevice> event) {
@@ -63,9 +69,17 @@ public class PingService {
     }
 
     @EventSubscribe(payloadKeyExpression = PingConstants.INTEGRATION_ID + ".integration.benchmark", eventType = ExchangeEvent.EventType.DOWN)
+    @Async
     public void doBenchmark(Event<PingIntegrationEntities> event) {
         // mark benchmark starting
-        exchangeFlowExecutor.syncExchangeDown(new ExchangePayload(Map.of(PingConstants.INTEGRATION_ID + ".integration.detect_status", PingIntegrationEntities.DetectStatus.DETECTING.ordinal())));
+        String detectStatusKey = PingConstants.INTEGRATION_ID + ".integration.detect_status";
+        long detectStatus = entityValueServiceProvider.findValueByKey(detectStatusKey).asLong(PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
+        if (detectStatus == PingIntegrationEntities.DetectStatus.DETECTING.ordinal()) {
+            log.warn("[WARNING] Benchmark running");
+            return;
+        }
+
+        exchangeFlowExecutor.syncExchangeDown(new ExchangePayload(Map.of(detectStatusKey, PingIntegrationEntities.DetectStatus.DETECTING.ordinal())));
         int timeout = 2000;
 
         // start pinging
@@ -105,12 +119,14 @@ public class PingService {
                     exchangePayload.put(entity.getKey(), fDelay);
                 }
             });
+
+            Assert.notEmpty(exchangePayload, "Exchange should not be empty!");
             exchangeFlowExecutor.asyncExchangeDown(exchangePayload);
         });
 
         // mark benchmark done
         ExchangePayload donePayload = new ExchangePayload();
-        donePayload.put(PingConstants.INTEGRATION_ID + ".integration.detect_status", PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
+        donePayload.put(detectStatusKey, PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
         exchangeFlowExecutor.syncExchangeUp(donePayload);
     }
 }
