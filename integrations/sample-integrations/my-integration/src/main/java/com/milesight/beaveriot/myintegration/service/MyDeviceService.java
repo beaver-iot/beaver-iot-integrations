@@ -31,7 +31,7 @@ public class MyDeviceService {
     // highlight-next-line
     public void onAddDevice(Event<MyIntegrationEntities.AddDevice> event) {
         MyIntegrationEntities.AddDevice addDevice = event.getPayload();
-        String deviceName = addDevice.getDeviceName();
+        String deviceName = addDevice.getAddDeviceName();
         String ip = addDevice.getIp();
         final String integrationId = "my-integration";
         Device device = new DeviceBuilder(integrationId)
@@ -54,7 +54,7 @@ public class MyDeviceService {
     @EventSubscribe(payloadKeyExpression = "my-integration.integration.delete_device", eventType = ExchangeEvent.EventType.DOWN)
     // highlight-next-line
     public void onDeleteDevice(Event<MyIntegrationEntities.DeleteDevice> event) {
-        Device device = event.getPayload().getDevice();
+        Device device = event.getPayload().getDeletedDevice();
         deviceServiceProvider.deleteById(device.getId());
     }
 
