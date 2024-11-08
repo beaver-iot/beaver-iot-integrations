@@ -70,7 +70,7 @@ public class PingService {
 
     @EventSubscribe(payloadKeyExpression = PingConstants.INTEGRATION_ID + ".integration.benchmark", eventType = ExchangeEvent.EventType.DOWN)
     @Async
-    public void doBenchmark(Event<PingIntegrationEntities> event) {
+    public void benchmark(Event<PingIntegrationEntities> event) {
         // mark benchmark starting
         String detectStatusKey = PingConstants.INTEGRATION_ID + ".integration.detect_status";
         long detectStatus = entityValueServiceProvider.findValueByKey(detectStatusKey).asLong(PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
@@ -79,6 +79,19 @@ public class PingService {
             return;
         }
 
+        try {
+            doBenchmark(detectStatusKey);
+        } catch (Exception e) {
+            log.error("[Benchmark Error] " + e);
+        } finally {
+            // mark benchmark done
+            ExchangePayload donePayload = new ExchangePayload();
+            donePayload.put(detectStatusKey, PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
+            exchangeFlowExecutor.syncExchangeUp(donePayload);
+        }
+    }
+
+    public void doBenchmark(String detectStatusKey) {
         exchangeFlowExecutor.syncExchangeDown(new ExchangePayload(Map.of(detectStatusKey, PingIntegrationEntities.DetectStatus.DETECTING.ordinal())));
         int timeout = 2000;
 
@@ -123,10 +136,5 @@ public class PingService {
             Assert.notEmpty(exchangePayload, "Exchange should not be empty!");
             exchangeFlowExecutor.asyncExchangeDown(exchangePayload);
         });
-
-        // mark benchmark done
-        ExchangePayload donePayload = new ExchangePayload();
-        donePayload.put(detectStatusKey, PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
-        exchangeFlowExecutor.syncExchangeUp(donePayload);
     }
 }
