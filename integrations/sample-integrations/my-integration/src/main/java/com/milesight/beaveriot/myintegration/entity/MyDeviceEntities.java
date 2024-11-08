@@ -1,4 +1,4 @@
-package com.milesight.beaveriot.myintegration;
+package com.milesight.beaveriot.myintegration.entity;
 
 import com.milesight.beaveriot.context.integration.entity.annotation.Attribute;
 import com.milesight.beaveriot.context.integration.entity.annotation.DeviceEntities;

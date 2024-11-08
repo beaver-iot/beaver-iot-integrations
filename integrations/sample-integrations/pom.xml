@@ -11,6 +11,11 @@
 
     <artifactId>sample-integrations</artifactId>
 
+    <modules>
+        <module>my-integration</module>
+    </modules>
+
+    <packaging>pom</packaging>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>

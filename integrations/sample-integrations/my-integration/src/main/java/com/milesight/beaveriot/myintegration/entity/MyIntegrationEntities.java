@@ -1,5 +1,7 @@
-package com.milesight.beaveriot.myintegration;
+package com.milesight.beaveriot.myintegration.entity;
 
+import com.milesight.beaveriot.context.integration.context.AddDeviceAware;
+import com.milesight.beaveriot.context.integration.context.DeleteDeviceAware;
 import com.milesight.beaveriot.context.integration.entity.annotation.Attribute;
 import com.milesight.beaveriot.context.integration.entity.annotation.Entities;
 import com.milesight.beaveriot.context.integration.entity.annotation.Entity;
@@ -32,7 +34,7 @@ public class MyIntegrationEntities extends ExchangePayload {
 
     @Entity(type = EntityType.SERVICE, identifier = "delete_device")
     // highlight-next-line
-    private String deleteDevice;
+    private DeleteDevice deleteDevice;
 
 
     @Data
@@ -53,9 +55,15 @@ public class MyIntegrationEntities extends ExchangePayload {
     @Data
     @EqualsAndHashCode(callSuper = true)
     @Entities
-    public static class AddDevice extends ExchangePayload {
+    public static class AddDevice extends ExchangePayload implements AddDeviceAware {
         @Entity
         private String ip;
+    }
+
+    @Data
+    @EqualsAndHashCode(callSuper = true)
+    @Entities
+    public static class DeleteDevice extends ExchangePayload implements DeleteDeviceAware {
     }
 
     public enum DetectStatus {

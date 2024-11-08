@@ -1,10 +1,11 @@
-package com.milesight.beaveriot.myintegration;
+package com.milesight.beaveriot.myintegration.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.milesight.beaveriot.base.response.ResponseBody;
 import com.milesight.beaveriot.base.response.ResponseBuilder;
 import com.milesight.beaveriot.context.api.DeviceServiceProvider;
 import com.milesight.beaveriot.context.api.EntityValueServiceProvider;
+import com.milesight.beaveriot.myintegration.entity.MyDeviceEntities;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

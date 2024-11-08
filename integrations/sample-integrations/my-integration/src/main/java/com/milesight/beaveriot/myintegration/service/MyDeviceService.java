@@ -1,4 +1,4 @@
-package com.milesight.beaveriot.myintegration;
+package com.milesight.beaveriot.myintegration.service;
 
 import com.milesight.beaveriot.context.api.DeviceServiceProvider;
 import com.milesight.beaveriot.context.api.ExchangeFlowExecutor;
@@ -8,6 +8,8 @@ import com.milesight.beaveriot.context.integration.model.*;
 import com.milesight.beaveriot.context.integration.model.event.ExchangeEvent;
 import com.milesight.beaveriot.eventbus.annotations.EventSubscribe;
 import com.milesight.beaveriot.eventbus.api.Event;
+import com.milesight.beaveriot.myintegration.entity.MyDeviceEntities;
+import com.milesight.beaveriot.myintegration.entity.MyIntegrationEntities;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,30 +30,31 @@ public class MyDeviceService {
     @EventSubscribe(payloadKeyExpression = "my-integration.integration.add_device.*", eventType = ExchangeEvent.EventType.DOWN)
     // highlight-next-line
     public void onAddDevice(Event<MyIntegrationEntities.AddDevice> event) {
-        String deviceName = event.getPayload().getContext("device_name", "Device Name");
-        String ip = event.getPayload().getIp();
+        MyIntegrationEntities.AddDevice addDevice = event.getPayload();
+        String deviceName = addDevice.getDeviceName();
+        String ip = addDevice.getIp();
         final String integrationId = "my-integration";
         Device device = new DeviceBuilder(integrationId)
                 .name(deviceName)
                 .identifier(ip.replace(".", "_"))
                 .additional(Map.of("ip", ip))
+                .entity(()->{
+                    return new EntityBuilder(integrationId)
+                            .identifier("status")
+                            .property("Device Status", AccessMod.R)
+                            .valueType(EntityValueType.LONG)
+                            .attributes(new AttributeBuilder().enums(MyDeviceEntities.DeviceStatus.class).build())
+                            .build();
+                })
                 .build();
-
-        Entity entity = new EntityBuilder(integrationId, device.getKey())
-                .identifier("status")
-                .property("Device Status", AccessMod.R)
-                .valueType(EntityValueType.LONG)
-                .attributes(new AttributeBuilder().enums(MyDeviceEntities.DeviceStatus.class).build())
-                .build();
-        device.setEntities(Collections.singletonList(entity));
 
         deviceServiceProvider.save(device);
     }
 
     @EventSubscribe(payloadKeyExpression = "my-integration.integration.delete_device", eventType = ExchangeEvent.EventType.DOWN)
     // highlight-next-line
-    public void onDeleteDevice(Event<ExchangePayload> event) {
-        Device device = (Device) event.getPayload().getContext("device");
+    public void onDeleteDevice(Event<MyIntegrationEntities.DeleteDevice> event) {
+        Device device = event.getPayload().getDevice();
         deviceServiceProvider.deleteById(device.getId());
     }
 
