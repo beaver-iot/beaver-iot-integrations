@@ -1,5 +1,6 @@
 package com.milesight.beaveriot.ping;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.milesight.beaveriot.context.api.DeviceServiceProvider;
 import com.milesight.beaveriot.context.api.EntityValueServiceProvider;
 import com.milesight.beaveriot.context.api.ExchangeFlowExecutor;
@@ -73,8 +74,8 @@ public class PingService {
     public void benchmark(Event<PingIntegrationEntities> event) {
         // mark benchmark starting
         String detectStatusKey = PingConstants.INTEGRATION_ID + ".integration.detect_status";
-        long detectStatus = entityValueServiceProvider.findValueByKey(detectStatusKey).asLong(PingIntegrationEntities.DetectStatus.STANDBY.ordinal());
-        if (detectStatus == PingIntegrationEntities.DetectStatus.DETECTING.ordinal()) {
+        JsonNode detectStatusNode = entityValueServiceProvider.findValueByKey(detectStatusKey);
+        if (detectStatusNode.isNull() || detectStatusNode.asLong() == PingIntegrationEntities.DetectStatus.DETECTING.ordinal()) {
             log.warn("[WARNING] Benchmark running");
             return;
         }
